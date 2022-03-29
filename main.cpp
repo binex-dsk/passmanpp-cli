@@ -33,6 +33,20 @@ int main(int argc, char** argv) {
             mkEntryParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
 
             mkEntryParser.process(cmdArgs);
+
+            if (mkEntryParser.positionalArguments().at(0).isEmpty()) {
+                qWarning() << "Entry name must be provided.";
+                mkEntryParser.showHelp();
+            } else {
+                qInfo() << "name:" << mkEntryParser.positionalArguments().at(0);
+                qInfo() << "email:" << mkEntryParser.value("email");
+                qInfo() << "url:" << mkEntryParser.value("url");
+                qInfo() << "notes:" << mkEntryParser.value("notes");
+                qInfo() << "passwor:" << mkEntryParser.value("password");
+            }
+
+
+
         } else if (c == "modify") {
             QCommandLineParser modifyParser;
             modifyParser.setApplicationDescription(QObject::tr("modify: Modify an entry."));
@@ -49,6 +63,8 @@ int main(int argc, char** argv) {
             modifyParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
 
             modifyParser.process(cmdArgs);
+
+            modifyParser.showHelp();
         } else if (c == "get") {
             QCommandLineParser getParser;
             getParser.setApplicationDescription(QObject::tr("get: Get details of an entry."));
@@ -64,6 +80,8 @@ int main(int argc, char** argv) {
             getParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
 
             getParser.process(cmdArgs);
+
+            getParser.showHelp();
         } else if (c == "rm") {
             QCommandLineParser rmParser;
             rmParser.setApplicationDescription(QObject::tr("rm: Remove an entry."));
@@ -75,6 +93,8 @@ int main(int argc, char** argv) {
             rmParser.addOption(forceOption);
 
             rmParser.process(cmdArgs);
+
+            rmParser.showHelp();
         } else if (c == "mkdb") {
             QCommandLineParser mkdbParser;
             mkdbParser.setApplicationDescription(QObject::tr("mkdb: Make a new database."));
@@ -95,6 +115,8 @@ int main(int argc, char** argv) {
             mkdbParser.addOptions({keyFileOption, hmacOption, hashOption, hashItersOption, encryptionOption, memoryUsageOption, noCompressOption, nameOption, descriptionOption});
 
             mkdbParser.process(cmdArgs);
+
+            mkdbParser.showHelp();
         } else if (c == "edit") {
             QCommandLineParser editParser;
             editParser.setApplicationDescription(QObject::tr("edit: Edit a database."));
@@ -115,6 +137,8 @@ int main(int argc, char** argv) {
             editParser.addOptions({keyFileOption, hmacOption, hashOption, hashItersOption, encryptionOption, memoryUsageOption, noCompressOption, nameOption, descriptionOption});
 
             editParser.process(cmdArgs);
+
+            editParser.showHelp();
         } else if (c == "info") {
             QCommandLineParser infoParser;
             infoParser.setApplicationDescription(QObject::tr("info: Get info on a database.\n"
@@ -135,9 +159,23 @@ int main(int argc, char** argv) {
             infoParser.addOptions({keyFileOption, hmacOption, hashOption, hashItersOption, encryptionOption, memoryUsageOption, noCompressOption, descriptionOption});
 
             infoParser.process(cmdArgs);
+
+            infoParser.showHelp();
         } else {
             QCommandLineParser parser;
-            parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager."));
+            parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"
+                    "This program is free software: you can redistribute it and/or modify\n"
+                    "it under the terms of the GNU General Public License as published by\n"
+                    "the Free Software Foundation, either version 3 of the License, or\n"
+                    "(at your option) any later version.\n\n"
+
+                    "This program is distributed in the hope that it will be useful,\n"
+                    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+                    "GNU General Public License for more details.\n\n"
+
+                    "You should have received a copy of the GNU General Public License\n"
+                    "along with this program.  If not, see <https://www.gnu.org/licenses/>."));
             parser.addHelpOption();
             parser.addVersionOption();
 
@@ -148,10 +186,24 @@ int main(int argc, char** argv) {
             parser.addOptions({debugOption, verboseOption});
 
             parser.process(app);
+
+            parser.showHelp();
         }
     } else {
         QCommandLineParser parser;
-        parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager."));
+        parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"
+                    "This program is free software: you can redistribute it and/or modify\n"
+                    "it under the terms of the GNU General Public License as published by\n"
+                    "the Free Software Foundation, either version 3 of the License, or\n"
+                    "(at your option) any later version.\n\n"
+
+                    "This program is distributed in the hope that it will be useful,\n"
+                    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+                    "GNU General Public License for more details.\n\n"
+
+                    "You should have received a copy of the GNU General Public License\n"
+                    "along with this program.  If not, see <https://www.gnu.org/licenses/>."));
         parser.addHelpOption();
         parser.addVersionOption();
 
@@ -162,6 +214,8 @@ int main(int argc, char** argv) {
         parser.addOptions({debugOption, verboseOption});
 
         parser.process(app);
+
+        parser.showHelp();
     }
 
 
