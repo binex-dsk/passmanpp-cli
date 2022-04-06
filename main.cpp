@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 
             mkEntryParser.process(cmdArgs);
 
-            if (mkEntryParser.positionalArguments().at(0).isEmpty()) {
+            if (mkEntryParser.positionalArguments().size() < 1) {
                 qWarning() << "Entry name must be provided.";
                 mkEntryParser.showHelp();
             } else {
@@ -42,11 +42,8 @@ int main(int argc, char** argv) {
                 qInfo() << "email:" << mkEntryParser.value("email");
                 qInfo() << "url:" << mkEntryParser.value("url");
                 qInfo() << "notes:" << mkEntryParser.value("notes");
-                qInfo() << "passwor:" << mkEntryParser.value("password");
+                qInfo() << "password:" << mkEntryParser.value("password");
             }
-
-
-
         } else if (c == "modify") {
             QCommandLineParser modifyParser;
             modifyParser.setApplicationDescription(QObject::tr("modify: Modify an entry."));
