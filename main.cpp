@@ -4,6 +4,10 @@
 #include <QFile>
 #include <QDebug>
 
+#include <passman/constants.hpp>
+#include <passman/extra.hpp>
+#include <passman/pdpp_database.hpp>
+
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
 
@@ -12,7 +16,8 @@ int main(int argc, char** argv) {
     QCoreApplication::setApplicationName(QObject::tr("passman++"));
     QCoreApplication::setApplicationVersion("1.0.0");
 
-    //const QStringList args = parser.positionalArguments();
+    passman::PDPPDatabase *database = new passman::PDPPDatabase();
+    // Database path is set up later, in each command's run() function
 
     if (app.arguments().length() > 1) {
         QString c = app.arguments().at(1);
@@ -180,15 +185,19 @@ int main(int argc, char** argv) {
             QCommandLineOption verboseOption(QStringList() << "V" << "verbose", QObject::tr("Activate verbose mode for more output."));
             parser.addPositionalArgument("command", "Command to execute");
 
-            parser.addOptions({debugOption, verboseOption});
+            QCommandLineOption listOption(QStringList() << "l" << "list", QObject::tr("List available commands."));
+
+            parser.addOptions({debugOption, verboseOption, listOption});
 
             parser.process(app);
 
-            parser.showHelp();
+            if (parser.isSet(listOption)) {
+                qInfo() << "Commands:\nmkentry\nmodify\nget\nrm\nmkdb\nedit\ninfo";
+            }
         }
     } else {
         QCommandLineParser parser;
-        parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"
+        parser.setApplicationDescription(passman::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"
                     "This program is free software: you can redistribute it and/or modify\n"
                     "it under the terms of the GNU General Public License as published by\n"
                     "the Free Software Foundation, either version 3 of the License, or\n"
@@ -200,7 +209,10 @@ int main(int argc, char** argv) {
                     "GNU General Public License for more details.\n\n"
 
                     "You should have received a copy of the GNU General Public License\n"
-                    "along with this program.  If not, see <https://www.gnu.org/licenses/>."));
+                    "along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n"
+
+                    "passman++ is built on libpassman, version " + passman::Constants::libpassmanVersion + ".\n"
+                    "For more information on libpassman, see " + passman::Constants::libpassmanGithub + "."));
         parser.addHelpOption();
         parser.addVersionOption();
 
