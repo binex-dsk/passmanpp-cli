@@ -8,6 +8,8 @@
 #include <passman/extra.hpp>
 #include <passman/pdpp_database.hpp>
 
+#include "commands/mkdb.hpp"
+
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
 
@@ -98,27 +100,10 @@ int main(int argc, char** argv) {
 
             rmParser.showHelp();
         } else if (c == "mkdb") {
-            QCommandLineParser mkdbParser;
-            mkdbParser.setApplicationDescription(QObject::tr("mkdb: Make a new database."));
-            mkdbParser.addHelpOption();
-            mkdbParser.addVersionOption();
-
-            mkdbParser.addPositionalArgument("name", "Name of the new database.");
-            QCommandLineOption keyFileOption(QStringList() << "k" << "key-file", QObject::tr("Key file for this database"), QObject::tr("file"), QObject::tr(""));
-            QCommandLineOption hmacOption(QStringList() << "H" << "hmac", QObject::tr("HMAC option for this database (see man passman for options)."), QObject::tr("hmac"), QObject::tr("0"));
-            QCommandLineOption hashOption(QStringList() << "a" << "hash", QObject::tr("Password hashing option for this database (see man passman for options)"), QObject::tr("hash"), QObject::tr("0"));
-            QCommandLineOption hashItersOption(QStringList() << "i" << "hash-iters", QObject::tr("Password hashing iterations for this database"), QObject::tr("iterations"), QObject::tr("8"));
-            QCommandLineOption encryptionOption(QStringList() << "e" << "encryption", QObject::tr("Encryption option for this database (see man passman for options)"), QObject::tr("encryption"), QObject::tr("0"));
-            QCommandLineOption memoryUsageOption(QStringList() << "m" << "memory", QObject::tr("Memory usage (in MB) to use with password hashing for this database"), QObject::tr("MB"), QObject::tr("64"));
-            QCommandLineOption noCompressOption(QStringList() << "c" << "no-compression", QObject::tr("Disable compression for this database (NOT RECOMMENDED!)"));
-            QCommandLineOption nameOption(QStringList() << "n" << "name", QObject::tr("Name of this database"), QObject::tr("name"), QObject::tr(""));
-            QCommandLineOption descriptionOption(QStringList() << "d" << "description", QObject::tr("Description of this database"), QObject::tr("description"), QObject::tr(""));
-
-            mkdbParser.addOptions({keyFileOption, hmacOption, hashOption, hashItersOption, encryptionOption, memoryUsageOption, noCompressOption, nameOption, descriptionOption});
-
-            mkdbParser.process(cmdArgs);
-
-            mkdbParser.showHelp();
+            MkDb *mkdb = new MkDb();
+            mkdb->parse();
+            qInfo() << "sneed";
+            return mkdb->run(database);
         } else if (c == "edit") {
             QCommandLineParser editParser;
             editParser.setApplicationDescription(QObject::tr("edit: Edit a database."));

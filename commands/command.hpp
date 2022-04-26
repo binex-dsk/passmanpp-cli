@@ -1,16 +1,14 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <passman/pdpp_database.hpp>
 
 class Command {
 public:
-    Command() = default;
-    virtual ~Command() = default;
+    virtual ~Command();
 
     virtual bool parse();
 
-    virtual bool run();
-
-    virtual void description();
+    virtual bool run(passman::PDPPDatabase *db);
 
     QCommandLineParser m_parser;
-}
+};

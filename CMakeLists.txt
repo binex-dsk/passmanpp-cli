@@ -15,6 +15,11 @@ set(DATA_INSTALL_DIR "${CMAKE_INSTALL_DATAROOTDIR}")
 
 add_executable(passman++
         main.cpp
+        util.cpp
+
+        commands/mkdb.cpp
+
+        commands/command.cpp
 
         #../libpassman/src/data_stream.cpp
         #../libpassman/src/extra.cpp
