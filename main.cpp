@@ -9,6 +9,7 @@
 #include <passman/pdpp_database.hpp>
 
 #include "commands/mkdb.hpp"
+#include "commands/info.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -102,7 +103,6 @@ int main(int argc, char** argv) {
         } else if (c == "mkdb") {
             MkDb *mkdb = new MkDb();
             mkdb->parse();
-            qInfo() << "sneed";
             return mkdb->run(database);
         } else if (c == "edit") {
             QCommandLineParser editParser;
@@ -127,27 +127,9 @@ int main(int argc, char** argv) {
 
             editParser.showHelp();
         } else if (c == "info") {
-            QCommandLineParser infoParser;
-            infoParser.setApplicationDescription(QObject::tr("info: Get info on a database.\n"
-                                                             "If multiple flags are provided, all the selected fields will be shown."));
-            infoParser.addHelpOption();
-            infoParser.addVersionOption();
-
-            infoParser.addPositionalArgument("name", "Name of the database.");
-            QCommandLineOption keyFileOption(QStringList() << "k" << "key-file", QObject::tr("Whether or not this database has a key file."));
-            QCommandLineOption hmacOption(QStringList() << "H" << "hmac", QObject::tr("Get the HMAC option for this database"));
-            QCommandLineOption hashOption(QStringList() << "a" << "hash", QObject::tr("Get the password hashing option for this database"));
-            QCommandLineOption hashItersOption(QStringList() << "i" << "hash-iters", QObject::tr("Get the password hashing iterations for this database"));
-            QCommandLineOption encryptionOption(QStringList() << "e" << "encryption", QObject::tr("Get the encryption option for this database"));
-            QCommandLineOption memoryUsageOption(QStringList() << "m" << "memory", QObject::tr("Get the memory usage (in MB) used with password hashing for this database"));
-            QCommandLineOption noCompressOption(QStringList() << "c" << "no-compression", QObject::tr("Whether or not this database is compressed."));
-            QCommandLineOption descriptionOption(QStringList() << "d" << "description", QObject::tr("Get the description of this database"));
-
-            infoParser.addOptions({keyFileOption, hmacOption, hashOption, hashItersOption, encryptionOption, memoryUsageOption, noCompressOption, descriptionOption});
-
-            infoParser.process(cmdArgs);
-
-            infoParser.showHelp();
+            Info *info = new Info();
+            info->parse();
+            return info->run(database);
         } else {
             QCommandLineParser parser;
             parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"

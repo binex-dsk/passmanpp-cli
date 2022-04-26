@@ -1,3 +1,6 @@
+#ifndef COMMAND_HPP
+#define COMMAND_HPP
+
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include <passman/pdpp_database.hpp>
@@ -12,3 +15,5 @@ public:
 
     QCommandLineParser m_parser;
 };
+
+#endif // COMMAND_HPP

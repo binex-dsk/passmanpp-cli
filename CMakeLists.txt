@@ -18,6 +18,7 @@ add_executable(passman++
         util.cpp
 
         commands/mkdb.cpp
+        commands/info.cpp
 
         commands/command.cpp
 

@@ -1,3 +1,6 @@
+#ifndef MKDB_HPP
+#define MKDB_HPP
+
 #include "command.hpp"
 
 class MkDb : public Command {
@@ -20,3 +23,5 @@ public:
 
     passman::VectorUnion password;
 };
+
+#endif // MKDB_HPP
