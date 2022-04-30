@@ -76,19 +76,32 @@ bool Info::run(passman::PDPPDatabase *db) {
     }
     db->keyFilePath = keyFilePath;
 
+    // -1 if none set, 0 if 1 is set, > 0 if multiple are set.
+    int set = -1 + (keyFile + hmac + hash + hashIters + encryption + memoryUsage + compression + name + description);
+
+    // Verify our password, load database's data, and then print the stuff out.
     if (db->verify(password)) {
         db->get();
 
-        qInfo() << "Name:" << db->name.asQStr();
-        qInfo() << "Description:" << db->desc.asQStr();
-        qInfo() << "HMAC Function:" << QString::fromStdString(passman::Constants::hmacMatch.at(db->hmac));
-        qInfo() << "Hashing Function:" << QString::fromStdString(passman::Constants::hashMatch.at(db->hash));
-        qInfo() << "Hashing Iterations:" << db->hashIters;
-        qInfo() << "Encryption Function:" << QString::fromStdString(passman::Constants::encryptionMatch.at(db->encryption));
-        qInfo() << "Memory Usage:" << db->memoryUsage;
-        qInfo() << "Compression:" << db->compress;
+        QString toPrint;
+
+        // Bruh
+        // If the option is set or none are set: then we want to print something
+        // If no options are set or multiple are: display the field's name
+        // Then print the value
+        // Effectively, if this is the only option set, print just the value, otherwise,
+        // if none are set or multiple are set, display the values with their names.
+        toPrint += (name || set == -1 ? ((set != 0 ? "Name: " : "") + db->name.asQStr()) + "\n" : "");
+        toPrint += (description || set == -1 ? ((set != 0 ? "Description: " : "") + db->desc.asQStr() + "\n") : "");
+        toPrint += (hmac || set == -1 ? ((set != 0 ? "HMAC Function: " : "") + QString::fromStdString(passman::Constants::hmacMatch.at(db->hmac)) + "\n") : "");
+        toPrint += (hash || set == -1 ? ((set != 0 ? "Hashing Function: " : "") + QString::fromStdString(passman::Constants::hashMatch.at(db->hash)) + "\n") : "");
+        toPrint += (hashIters || set == -1 ? ((set != 0 ? "Hashing Iterations: " : "") + QString::number(db->hashIters) + "\n") : "");
+        toPrint += (encryption || set == -1 ? ((set != 0 ? "Encryption Function: " : "") + QString::fromStdString(passman::Constants::encryptionMatch.at(db->encryption)) + "\n") : "");
+        toPrint += (memoryUsage || set == -1 ? ((set != 0 ? "Memory Usage (MB): " : "") + QString::number(db->memoryUsage) + "\n") : "");
+        toPrint += (compression || set == -1 ? ((set != 0 ? "Compression: " : "") + QString(db->compress ? "On" : "Off") + "\n") : "");
+
+        std::cout << toPrint.toStdString();
     }
 
-    std::cout << "COPE";
     return true;
 }

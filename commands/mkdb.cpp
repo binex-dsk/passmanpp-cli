@@ -60,6 +60,9 @@ bool MkDb::parse() {
 }
 
 bool MkDb::run(passman::PDPPDatabase *db) {
+    db->path = path;
+
+    // Create a test entry and add it to the database
     passman::PDPPEntry *entry = new passman::PDPPEntry({}, db);
     for (passman::Field *f : entry->fields()) {
         f->setData("test");
@@ -70,10 +73,12 @@ bool MkDb::run(passman::PDPPDatabase *db) {
     db->keyFilePath = keyFile;
     db->keyFile = !keyFile.isEmpty();
 
+    // Create the key file for the database.
     if (db->keyFile && !QFile::exists(keyFile)) {
         mkKeyFile(keyFile);
     }
 
+    // Set values
     db->hmac = hmac;
     db->hash = hash;
     db->hashIters = hashIters;
@@ -84,15 +89,17 @@ bool MkDb::run(passman::PDPPDatabase *db) {
     db->name = name.isEmpty() ? "No Name" : name;
     db->desc = description.isEmpty() ? "No Description" : description;
 
+    // Make our encryptor to get the IV length
     auto encryptor = db->makeKdf()->makeEncryptor();
 
     Botan::AutoSeeded_RNG rng;
 
+    // Generate the IV, ensuring NOT to get 0's!
     db->ivLen = encryptor->default_nonce_length();
     db->iv = {};
     for (size_t i = 0; i < db->ivLen; ++i) {
         uint8_t next_byte = rng.next_byte();
-        // Having any null bytes in the iv causes a crash.
+        // Having any null bytes in the IV causes a crash.
         if (next_byte == 0) {
             --i;
             continue;
@@ -100,10 +107,8 @@ bool MkDb::run(passman::PDPPDatabase *db) {
         db->iv.push_back(next_byte);
     }
 
+    // Transform the password and save.
     db->passw = db->makeKdf()->transform(password);
-
-    db->path = path;
-
     db->save();
 
     std::cout << "COPE";

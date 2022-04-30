@@ -43,7 +43,6 @@ bool Edit::parse() {
 
     path = posArgs.at(1);
 
-
     keyFile = m_parser.value(keyFileOption);
     hmac = m_parser.value(hmacOption).toInt();
     hash = m_parser.value(hashOption).toInt();
@@ -84,6 +83,7 @@ bool Edit::run(passman::PDPPDatabase *db) {
             mkKeyFile(keyFile);
         }
 
+        // If the values are set, update them in the database.
         db->hmac = m_parser.isSet("hmac") ? hmac : db->hmac;
         db->hash = m_parser.isSet("hash") ? hash : db->hash;
         db->hashIters = m_parser.isSet("hash-iters") ? hashIters : db->hashIters;
@@ -94,15 +94,17 @@ bool Edit::run(passman::PDPPDatabase *db) {
         db->name = name.isEmpty() ? db->name : name;
         db->desc = description.isEmpty() ? db->desc : description;
 
+        // Make our database encryptor to get the IV length.
         auto encryptor = db->makeKdf()->makeEncryptor();
 
         Botan::AutoSeeded_RNG rng;
 
+        // Generate the IV, ensuring NOT to get 0's!
         db->ivLen = encryptor->default_nonce_length();
         db->iv = {};
         for (size_t i = 0; i < db->ivLen; ++i) {
             uint8_t next_byte = rng.next_byte();
-            // Having any null bytes in the iv causes a crash.
+            // Having any null bytes in the IV causes a crash.
             if (next_byte == 0) {
                 --i;
                 continue;
@@ -110,6 +112,7 @@ bool Edit::run(passman::PDPPDatabase *db) {
             db->iv.push_back(next_byte);
         }
 
+        // Finally, transform the password and save the database.
         db->passw = db->makeKdf()->transform(password);
         db->save();
     }
