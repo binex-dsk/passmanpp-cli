@@ -65,6 +65,8 @@ bool MkDb::run(passman::PDPPDatabase *db) {
         f->setData("test");
     }
 
+    db->addEntry(entry);
+
     db->keyFilePath = keyFile;
     db->keyFile = !keyFile.isEmpty();
 
@@ -87,7 +89,16 @@ bool MkDb::run(passman::PDPPDatabase *db) {
     Botan::AutoSeeded_RNG rng;
 
     db->ivLen = encryptor->default_nonce_length();
-    db->iv = rng.random_vec(db->ivLen);
+    db->iv = {};
+    for (size_t i = 0; i < db->ivLen; ++i) {
+        uint8_t next_byte = rng.next_byte();
+        // Having any null bytes in the iv causes a crash.
+        if (next_byte == 0) {
+            --i;
+            continue;
+        }
+        db->iv.push_back(next_byte);
+    }
 
     db->passw = db->makeKdf()->transform(password);
 
