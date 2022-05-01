@@ -23,6 +23,7 @@ add_executable(passman++
         commands/mkentry.cpp
         commands/rm.cpp
         commands/get.cpp
+        commands/modify.cpp
 
         commands/command.cpp
 

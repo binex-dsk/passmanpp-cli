@@ -14,6 +14,7 @@
 #include "commands/mkentry.hpp"
 #include "commands/rm.hpp"
 #include "commands/get.hpp"
+#include "commands/modify.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -36,23 +37,9 @@ int main(int argc, char** argv) {
             mkEntry->parse();
             return mkEntry->run(database);
         } else if (c == "modify") {
-            QCommandLineParser modifyParser;
-            modifyParser.setApplicationDescription(QObject::tr("modify: Modify an entry."));
-            modifyParser.addHelpOption();
-            modifyParser.addVersionOption();
-
-            modifyParser.addPositionalArgument("name", "Name of the entry.");
-            QCommandLineOption entryNameOption(QStringList() << "n" << "new-name", QObject::tr("New name of this entry."), QObject::tr("name"), QObject::tr(""));
-            QCommandLineOption entryEmailOption(QStringList() << "e" << "email", QObject::tr("New email of this entry."), QObject::tr("email"), QObject::tr(""));
-            QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("New URL of this entry."), QObject::tr("url"), QObject::tr(""));
-            QCommandLineOption entryNotesOption(QStringList() << "N" << "notes", QObject::tr("New notes of this entry."), QObject::tr("notes"), QObject::tr(""));
-            QCommandLineOption entryPasswordOption(QStringList() << "p" << "password", QObject::tr("New password of this entry (IT IS UNSAFE TO PASS THIS DIRECTLY: prefer command substitution, or type it in the prompt)"), QObject::tr("password"), QObject::tr(""));
-
-            modifyParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
-
-            modifyParser.process(cmdArgs);
-
-            modifyParser.showHelp();
+            Modify *modify = new Modify();
+            modify->parse();
+            return modify->run(database);
         } else if (c == "get") {
             Get *get = new Get();
             get->parse();

@@ -67,7 +67,7 @@ bool RM::run(passman::PDPPDatabase *db) {
     }
     db->keyFilePath = keyFile;
 
-    // Verify our password, load database's data, and then add the entry.
+    // Verify our password, load database's data, and then remove the entry.
     if (db->open(password.asQStr(), keyFile)) {
         passman::PDPPEntry *entry = db->entryNamed(name);
         if (entry) {
