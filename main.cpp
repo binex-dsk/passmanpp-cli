@@ -12,6 +12,7 @@
 #include "commands/info.hpp"
 #include "commands/edit.hpp"
 #include "commands/mkentry.hpp"
+#include "commands/rm.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -69,18 +70,9 @@ int main(int argc, char** argv) {
 
             getParser.showHelp();
         } else if (c == "rm") {
-            QCommandLineParser rmParser;
-            rmParser.setApplicationDescription(QObject::tr("rm: Remove an entry."));
-            rmParser.addHelpOption();
-            rmParser.addVersionOption();
-
-            rmParser.addPositionalArgument("name", "Name of the entry.");
-            QCommandLineOption forceOption(QStringList() << "f" << "force", QObject::tr("Force confirmation (useful for scripts)"));
-            rmParser.addOption(forceOption);
-
-            rmParser.process(cmdArgs);
-
-            rmParser.showHelp();
+            RM *rm = new RM();
+            rm->parse();
+            return rm->run(database);
         } else if (c == "mkdb") {
             MkDb *mkdb = new MkDb();
             mkdb->parse();
