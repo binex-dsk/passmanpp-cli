@@ -91,13 +91,8 @@ int main(int argc, char** argv) {
             parser.addHelpOption();
             parser.addVersionOption();
 
-            QCommandLineOption debugOption(QStringList() << "D" << "debug", QObject::tr("Activate debug mode for more output."));
-            QCommandLineOption verboseOption(QStringList() << "V" << "verbose", QObject::tr("Activate verbose mode for more output."));
-            parser.addPositionalArgument("command", "Command to execute");
-
             QCommandLineOption listOption(QStringList() << "l" << "list", QObject::tr("List available commands."));
-
-            parser.addOptions({debugOption, verboseOption, listOption});
+            parser.addOption(listOption);
 
             parser.process(app);
 
@@ -126,11 +121,8 @@ int main(int argc, char** argv) {
         parser.addHelpOption();
         parser.addVersionOption();
 
-        QCommandLineOption debugOption(QStringList() << "D" << "debug", QObject::tr("Activate debug mode for more output."));
-        QCommandLineOption verboseOption(QStringList() << "V" << "verbose", QObject::tr("Activate verbose mode for more output."));
-        parser.addPositionalArgument("command", "Command to execute");
-
-        parser.addOptions({debugOption, verboseOption});
+        QCommandLineOption listOption(QStringList() << "l" << "list", QObject::tr("List available commands."));
+        parser.addOption(listOption);
 
         parser.process(app);
 
