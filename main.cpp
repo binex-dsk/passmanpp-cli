@@ -116,13 +116,5 @@ int main(int argc, char** argv) {
         parser.showHelp();
     }
 
-
-    //passman::db.open();
-
-    //Database *database = new Database(mainWindow);
-
-    //app.setProperty("debug", QVariant(parser.isSet(debugOption)));
-    //app.setProperty("verbose", QVariant(parser.isSet(verboseOption)));
-
     return app.exec();
 }
