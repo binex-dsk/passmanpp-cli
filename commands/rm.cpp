@@ -71,6 +71,15 @@ bool RM::run(passman::PDPPDatabase *db) {
     if (db->open(password.asQStr(), keyFile)) {
         passman::PDPPEntry *entry = db->entryNamed(name);
         if (entry) {
+            if (!force) {
+                std::cout << "Are you sure you want to delete this entry? [yn] ";
+                std::string choice;
+                std::cin >> choice;
+
+                if (choice == "n" || choice == "N") {
+                    return false;
+                }
+            }
             db->removeEntry(entry);
             db->save();
         } else {
