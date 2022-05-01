@@ -13,6 +13,7 @@
 #include "commands/edit.hpp"
 #include "commands/mkentry.hpp"
 #include "commands/rm.hpp"
+#include "commands/get.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -53,22 +54,9 @@ int main(int argc, char** argv) {
 
             modifyParser.showHelp();
         } else if (c == "get") {
-            QCommandLineParser getParser;
-            getParser.setApplicationDescription(QObject::tr("get: Get details of an entry."));
-            getParser.addHelpOption();
-            getParser.addVersionOption();
-
-            getParser.addPositionalArgument("name", "Name of the entry.");
-            QCommandLineOption entryEmailOption(QStringList() << "e" << "email", QObject::tr("Get the email of this entry."));
-            QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("Get the URL of this entry."));
-            QCommandLineOption entryNotesOption(QStringList() << "n" << "notes", QObject::tr("Get the notes of this entry."));
-            QCommandLineOption entryPasswordOption(QStringList() << "p" << "password", QObject::tr("Get the password of this entry."));
-
-            getParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
-
-            getParser.process(cmdArgs);
-
-            getParser.showHelp();
+            Get *get = new Get();
+            get->parse();
+            return get->run(database);
         } else if (c == "rm") {
             RM *rm = new RM();
             rm->parse();
