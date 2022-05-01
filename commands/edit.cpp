@@ -36,7 +36,7 @@ bool Edit::parse() {
     m_parser.process(qApp->arguments());
 
     QStringList posArgs = m_parser.positionalArguments();
-    if (posArgs.empty()) {
+    if (posArgs.length() < 2) {
         qCritical() << "Database path must be provided.";
         std::exit(1);
     }
@@ -75,7 +75,7 @@ bool Edit::run(passman::PDPPDatabase *db) {
     }
     db->keyFilePath = keyFilePath;
 
-    if (db->verify(password)) {
+    if (db->open(password.asQStr(), keyFile)) {
         db->keyFilePath = keyFile;
         db->keyFile = !keyFile.isEmpty();
 

@@ -33,7 +33,7 @@ bool MkDb::parse() {
     m_parser.process(qApp->arguments());
 
     QStringList posArgs = m_parser.positionalArguments();
-    if (posArgs.empty()) {
+    if (posArgs.length() < 2) {
         qCritical() << "Database path must be provided.";
         std::exit(1);
     }
@@ -67,8 +67,6 @@ bool MkDb::run(passman::PDPPDatabase *db) {
     for (passman::Field *f : entry->fields()) {
         f->setData("test");
     }
-
-    db->addEntry(entry);
 
     db->keyFilePath = keyFile;
     db->keyFile = !keyFile.isEmpty();
@@ -109,6 +107,9 @@ bool MkDb::run(passman::PDPPDatabase *db) {
 
     // Transform the password and save.
     db->passw = db->makeKdf()->transform(password);
+
+    db->addEntry(entry);
+
     db->save();
 
     std::cout << "COPE";

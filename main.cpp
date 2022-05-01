@@ -11,6 +11,7 @@
 #include "commands/mkdb.hpp"
 #include "commands/info.hpp"
 #include "commands/edit.hpp"
+#include "commands/mkentry.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -20,6 +21,7 @@ int main(int argc, char** argv) {
     QCoreApplication::setApplicationName(QObject::tr("passman++"));
     QCoreApplication::setApplicationVersion("1.0.0");
 
+    passman::db.open();
     passman::PDPPDatabase *database = new passman::PDPPDatabase();
     // Database path is set up later, in each command's run() function
 
@@ -28,31 +30,9 @@ int main(int argc, char** argv) {
         QStringList cmdArgs = app.arguments();
         cmdArgs.removeFirst();
         if (c == "mkentry") {
-            QCommandLineParser mkEntryParser;
-            mkEntryParser.setApplicationDescription(QObject::tr("mkentry: Create an entry."));
-            mkEntryParser.addHelpOption();
-            mkEntryParser.addVersionOption();
-
-            mkEntryParser.addPositionalArgument("name", "Name of the entry.");
-            QCommandLineOption entryEmailOption(QStringList() << "e" << "email", QObject::tr("Email of this entry."), QObject::tr("email"), QObject::tr(""));
-            QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("URL of this entry."), QObject::tr("url"), QObject::tr(""));
-            QCommandLineOption entryNotesOption(QStringList() << "n" << "notes", QObject::tr("Notes of this entry."), QObject::tr("notes"), QObject::tr(""));
-            QCommandLineOption entryPasswordOption(QStringList() << "p" << "password", QObject::tr("Password of this entry (IT IS UNSAFE TO PASS THIS DIRECTLY: prefer command substitution, or type it in the prompt)"), QObject::tr("password"), QObject::tr(""));
-
-            mkEntryParser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption});
-
-            mkEntryParser.process(cmdArgs);
-
-            if (mkEntryParser.positionalArguments().size() < 1) {
-                qWarning() << "Entry name must be provided.";
-                mkEntryParser.showHelp();
-            } else {
-                qInfo() << "name:" << mkEntryParser.positionalArguments().at(0);
-                qInfo() << "email:" << mkEntryParser.value("email");
-                qInfo() << "url:" << mkEntryParser.value("url");
-                qInfo() << "notes:" << mkEntryParser.value("notes");
-                qInfo() << "password:" << mkEntryParser.value("password");
-            }
+            MkEntry *mkEntry = new MkEntry();
+            mkEntry->parse();
+            return mkEntry->run(database);
         } else if (c == "modify") {
             QCommandLineParser modifyParser;
             modifyParser.setApplicationDescription(QObject::tr("modify: Modify an entry."));

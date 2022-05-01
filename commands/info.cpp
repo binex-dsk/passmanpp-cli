@@ -37,7 +37,7 @@ bool Info::parse() {
     m_parser.process(qApp->arguments());
 
     QStringList posArgs = m_parser.positionalArguments();
-    if (posArgs.empty()) {
+    if (posArgs.length() < 2) {
         qCritical() << "Database path must be provided.";
         std::exit(1);
     }
@@ -80,9 +80,7 @@ bool Info::run(passman::PDPPDatabase *db) {
     int set = -1 + (keyFile + hmac + hash + hashIters + encryption + memoryUsage + compression + name + description);
 
     // Verify our password, load database's data, and then print the stuff out.
-    if (db->verify(password)) {
-        db->get();
-
+    if (db->open(password.asQStr(), keyFilePath.asQStr())) {
         QString toPrint;
 
         // Bruh
