@@ -24,17 +24,18 @@ add_executable(passman++
         commands/rm.cpp
         commands/get.cpp
         commands/modify.cpp
+        commands/otp.cpp
 
         commands/command.cpp
 
-        #../libpassman/src/data_stream.cpp
-        #../libpassman/src/extra.cpp
-        #../libpassman/src/field.cpp
-        #../libpassman/src/kdf.cpp
-        #../libpassman/src/pdpp_database.cpp
-        #../libpassman/src/pdpp_entry.cpp
-        #../libpassman/src/vector_union.cpp
-        #../libpassman/src/2fa.cpp
+#        ../libpassman/src/data_stream.cpp
+#        ../libpassman/src/extra.cpp
+#        ../libpassman/src/field.cpp
+#        ../libpassman/src/kdf.cpp
+#        ../libpassman/src/pdpp_database.cpp
+#        ../libpassman/src/pdpp_entry.cpp
+#        ../libpassman/src/vector_union.cpp
+#        ../libpassman/src/2fa.cpp
 )
 
 find_package(Qt6 COMPONENTS Core Sql REQUIRED)

@@ -1,10 +1,9 @@
-#ifndef MKENTRY_HPP
-#define MKENTRY_HPP
+#ifndef OTP_HPP
+#define OTP_HPP
 
 #include "command.hpp"
-#include <passman/field.hpp>
 
-class MkEntry : public Command {
+class OTP : public Command {
 public:
     bool parse() override;
 
@@ -18,12 +17,6 @@ public:
 
     /* Entry */
     QString name;
-    QString email;
-    QString url;
-    QString notes;
-    QString otpUri;
-    passman::VectorUnion entryPassword;
-
 };
 
-#endif // MKENTRY_HPP
+#endif // OTP_HPP

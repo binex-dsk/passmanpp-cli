@@ -21,6 +21,7 @@ public:
     bool url;
     bool notes;
     bool entryPassword;
+    bool otp;
 
 };
 

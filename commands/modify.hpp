@@ -22,6 +22,7 @@ public:
     QString email;
     QString url;
     QString notes;
+    QString otpUri;
     passman::VectorUnion entryPassword;
 
 };

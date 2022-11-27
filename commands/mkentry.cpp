@@ -10,6 +10,7 @@
 #include <passman/extra.hpp>
 #include <passman/field.hpp>
 #include <passman/pdpp_entry.hpp>
+#include <passman/2fa.hpp>
 
 bool MkEntry::parse() {
     m_parser.setApplicationDescription(QObject::tr("mkentry: Create an entry."));
@@ -23,11 +24,12 @@ bool MkEntry::parse() {
     QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("URL of this entry."), QObject::tr("url"), QObject::tr(""));
     QCommandLineOption entryNotesOption(QStringList() << "n" << "notes", QObject::tr("Notes of this entry."), QObject::tr("notes"), QObject::tr(""));
     QCommandLineOption entryPasswordOption(QStringList() << "P" << "password", QObject::tr("Password of this entry (IT IS UNSAFE TO PASS THIS DIRECTLY: prefer command substitution, or type it in the prompt)"), QObject::tr("password"), QObject::tr(""));
+    QCommandLineOption entryOTPOption(QStringList() << "o" << "otp", QObject::tr("The OTP URI of this entry. Use the otp command to retrieve a value."), QObject::tr("otp"), QObject::tr(""));
 
     QCommandLineOption passwordOption(QStringList() << "p" << "database-password", QObject::tr("Password of the database"), QObject::tr("password"), QObject::tr(""));
     QCommandLineOption keyFileOption(QStringList() << "k" << "key-file", QObject::tr("Key file for the database"), QObject::tr("file"), QObject::tr(""));
 
-    m_parser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, passwordOption, keyFileOption});
+    m_parser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, entryOTPOption, passwordOption, keyFileOption});
 
     m_parser.process(qApp->arguments());
 
@@ -50,6 +52,7 @@ bool MkEntry::parse() {
     url = m_parser.value(entryUrlOption);
     notes = m_parser.value(entryNotesOption);
     entryPassword = m_parser.value(entryPasswordOption);
+    otpUri = m_parser.value(entryOTPOption);
 
     password = m_parser.value(passwordOption);
     if (password.asQStr().isEmpty()) {
@@ -63,6 +66,17 @@ bool MkEntry::parse() {
 }
 
 bool MkEntry::run(passman::PDPPDatabase *db) {
+    if (!otpUri.isEmpty()) {
+        try {
+            passman::VectorUnion otpVector{otpUri};
+            passman::OTP *otp = new passman::OTP(otpVector);
+            otp->validate();
+        } catch (std::exception &e) {
+            qCritical() << e.what();
+            return false;
+        }
+    }
+
     db->path = path;
 
     // Create our fields
@@ -71,9 +85,10 @@ bool MkEntry::run(passman::PDPPDatabase *db) {
     passman::Field *urlField = new passman::Field("URL", url, QMetaType::QString);
     passman::Field *notesField = new passman::Field("Notes", notes, QMetaType::QByteArray);
     passman::Field *passwordField = new passman::Field("Password", entryPassword, QMetaType::QString);
+    passman::Field *otpField = new passman::Field("OTP", otpUri, QMetaType::QString);
 
     // Create the entry
-    passman::PDPPEntry *entry = new passman::PDPPEntry({nameField, emailField, urlField, notesField, passwordField}, db);
+    passman::PDPPEntry *entry = new passman::PDPPEntry({nameField, emailField, urlField, notesField, passwordField, otpField}, db);
 
     db->parse();
 

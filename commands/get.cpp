@@ -23,11 +23,12 @@ bool Get::parse() {
     QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("Get the URL of this entry."));
     QCommandLineOption entryNotesOption(QStringList() << "n" << "notes", QObject::tr("Get the notes of this entry."));
     QCommandLineOption entryPasswordOption(QStringList() << "P" << "password", QObject::tr("Get the password of this entry."));
+    QCommandLineOption entryOTPOption(QStringList() << "o" << "otp", QObject::tr("Get the OTP URI of this entry. If you need an OTP value, use the otp comamnd."));
 
     QCommandLineOption passwordOption(QStringList() << "p" << "database-password", QObject::tr("Password of the database"), QObject::tr("password"), QObject::tr(""));
     QCommandLineOption keyFileOption(QStringList() << "k" << "key-file", QObject::tr("Key file for the database"), QObject::tr("file"), QObject::tr(""));
 
-    m_parser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, passwordOption, keyFileOption});
+    m_parser.addOptions({entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, entryOTPOption, passwordOption, keyFileOption});
 
     m_parser.process(qApp->arguments());
 
@@ -45,6 +46,7 @@ bool Get::parse() {
     url = m_parser.isSet(entryUrlOption);
     notes = m_parser.isSet(entryNotesOption);
     entryPassword = m_parser.isSet(entryPasswordOption);
+    otp = m_parser.isSet(entryOTPOption);
 
     password = m_parser.value(passwordOption);
     if (password.asQStr().isEmpty()) {
@@ -86,6 +88,7 @@ bool Get::run(passman::PDPPDatabase *db) {
             toPrint += (url || set == -1 ? ((set != 0 ? "URL: " : "") + entry->fieldNamed("url")->dataStr() + "\n") : "");
             toPrint += (notes || set == -1 ? ((set != 0 ? "Notes: " : "") + entry->fieldNamed("notes")->dataStr() + "\n") : "");
             toPrint += (entryPassword || set == -1 ? ((set != 0 ? "Password: " : "") + entry->fieldNamed("password")->dataStr() + "\n") : "");
+            toPrint += (otp || set == -1 ? ((set != 0 ? "OTP URI: " : "") + entry->fieldNamed("otp")->dataStr() + "\n") : "");
 
             std::cout << toPrint.toStdString();
         }

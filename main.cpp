@@ -15,6 +15,7 @@
 #include "commands/rm.hpp"
 #include "commands/get.hpp"
 #include "commands/modify.hpp"
+#include "commands/otp.hpp"
 
 //#include <botan/bigint.h>
 //#include <passman/constants.hpp>
@@ -60,6 +61,10 @@ int main(int argc, char** argv) {
             Info *info = new Info();
             info->parse();
             return info->run(database);
+        } else if (c == "otp") {
+            OTP *otp = new OTP();
+            otp->parse();
+            return otp->run(database);
         } else {
             QCommandLineParser parser;
             parser.setApplicationDescription(QObject::tr("A simple, minimal, and just as powerful and secure password manager.\n\n"
@@ -84,7 +89,8 @@ int main(int argc, char** argv) {
             parser.process(app);
 
             if (parser.isSet(listOption)) {
-                qInfo() << "Commands:\nmkentry\nmodify\nget\nrm\nmkdb\nedit\ninfo";
+                qInfo() << "Commands:\nmkentry\nmodify\nget\nrm\nmkdb\nedit\ninfo\notp";
+                return 0;
             }
         }
     } else {

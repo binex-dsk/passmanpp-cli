@@ -112,6 +112,5 @@ bool MkDb::run(passman::PDPPDatabase *db) {
 
     db->save();
 
-    std::cout << "COPE";
     return true;
 }

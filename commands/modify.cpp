@@ -10,6 +10,7 @@
 #include <passman/extra.hpp>
 #include <passman/field.hpp>
 #include <passman/pdpp_entry.hpp>
+#include <passman/2fa.hpp>
 
 bool Modify::parse() {
     m_parser.setApplicationDescription(QObject::tr("modify: Modify an entry."));
@@ -24,11 +25,12 @@ bool Modify::parse() {
     QCommandLineOption entryUrlOption(QStringList() << "u" << "url", QObject::tr("New URL of this entry."), QObject::tr("url"), QObject::tr(""));
     QCommandLineOption entryNotesOption(QStringList() << "n" << "notes", QObject::tr("New notes of this entry."), QObject::tr("notes"), QObject::tr(""));
     QCommandLineOption entryPasswordOption(QStringList() << "P" << "password", QObject::tr("New password of this entry (IT IS UNSAFE TO PASS THIS DIRECTLY: prefer command substitution, or type it in the prompt)"), QObject::tr("password"), QObject::tr(""));
+    QCommandLineOption entryOTPOption(QStringList() << "o" << "otp", QObject::tr("The OTP URI of this entry. Use the otp command to retrieve a value."), QObject::tr("otp"), QObject::tr(""));
 
     QCommandLineOption passwordOption(QStringList() << "p" << "database-password", QObject::tr("Password of the database"), QObject::tr("password"), QObject::tr(""));
     QCommandLineOption keyFileOption(QStringList() << "k" << "key-file", QObject::tr("Key file for the database"), QObject::tr("file"), QObject::tr(""));
 
-    m_parser.addOptions({entryNameOption, entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, passwordOption, keyFileOption});
+    m_parser.addOptions({entryNameOption, entryEmailOption, entryUrlOption, entryNotesOption, entryPasswordOption, entryOTPOption, passwordOption, keyFileOption});
 
     m_parser.process(qApp->arguments());
 
@@ -51,6 +53,7 @@ bool Modify::parse() {
     email = m_parser.value(entryEmailOption);
     url = m_parser.value(entryUrlOption);
     notes = m_parser.value(entryNotesOption);
+    otpUri = m_parser.value(entryOTPOption);
     entryPassword = m_parser.value(entryPasswordOption);
 
     password = m_parser.value(passwordOption);
@@ -65,6 +68,17 @@ bool Modify::parse() {
 }
 
 bool Modify::run(passman::PDPPDatabase *db) {
+    if (!otpUri.isEmpty()) {
+        try {
+            passman::VectorUnion otpVector{otpUri};
+            passman::OTP *otp = new passman::OTP(otpVector);
+            otp->validate();
+        } catch (std::exception &e) {
+            qCritical() << e.what();
+            return false;
+        }
+    }
+
     db->path = path;
 
     db->parse();
@@ -83,7 +97,8 @@ bool Modify::run(passman::PDPPDatabase *db) {
             email = m_parser.isSet("email") ? email : entry->fieldNamed("email")->dataStr();
             url = m_parser.isSet("url") ? url : entry->fieldNamed("url")->dataStr();
             notes = m_parser.isSet("notes") ? notes : entry->fieldNamed("notes")->dataStr();
-            entryPassword = m_parser.isSet("password") ? password : entry->fieldNamed("password")->dataStr();
+            otpUri = m_parser.isSet("otp") ? otpUri : entry->fieldNamed("otp")->dataStr();
+            entryPassword = m_parser.isSet("password") ? entryPassword : entry->fieldNamed("password")->data();
 
             // Create our fields
             passman::Field *nameField = new passman::Field("Name", newName, QMetaType::QString);
@@ -91,9 +106,10 @@ bool Modify::run(passman::PDPPDatabase *db) {
             passman::Field *urlField = new passman::Field("URL", url, QMetaType::QString);
             passman::Field *notesField = new passman::Field("Notes", notes, QMetaType::QByteArray);
             passman::Field *passwordField = new passman::Field("Password", entryPassword, QMetaType::QString);
+            passman::Field *otpField = new passman::Field("OTP", otpUri, QMetaType::QString);
 
             // Create the entry
-            passman::PDPPEntry *newEntry = new passman::PDPPEntry({nameField, emailField, urlField, notesField, passwordField}, db);
+            passman::PDPPEntry *newEntry = new passman::PDPPEntry({nameField, emailField, urlField, notesField, passwordField, otpField}, db);
 
             db->removeEntry(entry);
             db->addEntry(newEntry);
